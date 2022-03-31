@@ -1,11 +1,19 @@
+// Includes
+
 const express = require("express");
 const { v4: uuidv4 } = require('uuid');
-const Deta = require('deta');
+const { Deta } = require('deta');
 
-const deta = Deta("project key");
-const db = deta.Base("OpenLicense");
+const detasdk = Deta();
+const db = detasdk.Base("OpenLicense");
 
 const app = express();
+
+// For parsing application/json
+app.use(express.json());
+  
+// For parsing application/x-www-form-urlencoded
+app.use(express.urlencoded({ extended: true }));
 
 const config = {
     username: 'Admin',
@@ -50,7 +58,7 @@ app.get("/api/getlicense", async (req, res) => {
     try {
         var license = await db.get(req.query.license_id);
         if (license != null) {
-            if (license.license_expires == false) {
+            if (license.license_expires == 'false') {
                 res.status(200).json({ success: 1, license: license, license_isvalid: true })
             } else if (license.license_expires < Date()) {
                 res.status(500).json({ success: 0, error: "License expired." })
