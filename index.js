@@ -3,6 +3,7 @@
 const express = require("express");
 const { v4: uuidv4 } = require('uuid');
 const { Deta } = require('deta');
+const moment = require('moment');
 
 const detasdk = Deta();
 const db = detasdk.Base("OpenLicense");
@@ -60,7 +61,7 @@ app.get("/api/getlicense", async (req, res) => {
         if (license != null) {
             if (license.license_expires == 'false') {
                 res.status(200).json({ success: 1, license: license, license_isvalid: true })
-            } else if (license.license_expires < Date()) {
+            } else if (moment(license.license_expires, "DD/MM/YYYY").isAfter(moment(new Date(), "DD/MM/YYYY"), 'day')) {
                 res.status(500).json({ success: 0, error: "License expired." })
             } else {
                 res.status(200).json({ success: 1, license: license, license_isvalid: true })
