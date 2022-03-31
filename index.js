@@ -61,7 +61,7 @@ app.get("/api/getlicense", async (req, res) => {
         if (license != null) {
             if (license.license_expires == 'false') {
                 res.status(200).json({ success: 1, license: license, license_isvalid: true })
-            } else if (moment(license.license_expires, "DD/MM/YYYY").isAfter(moment(new Date(), "DD/MM/YYYY"), 'day')) {
+            } else if (moment(Date(license.license_expires), "DD/MM/YYYY").isAfter(moment(new Date(), "DD/MM/YYYY"), 'day')) {
                 res.status(500).json({ success: 0, error: "License expired." })
             } else {
                 res.status(200).json({ success: 1, license: license, license_isvalid: true })
@@ -69,6 +69,7 @@ app.get("/api/getlicense", async (req, res) => {
         }
     } catch (err) {
         res.status(500).json({ success: 0, error: "License could not be read." })
+        console.error(err)
     }
 });
 
